@@ -193,6 +193,8 @@ def detect(opt):
 
             # Stream results
             im0 = annotator.result()
+            line = [(0, int(0.5 * im0.shape[0])), (int(im0.shape[1]), int(0.5 * im0.shape[0]))]
+            cv2.line(im0, line[0], line[1], (0, 255, 255), 2)
             if show_vid:
                 cv2.imshow(str(p), im0)
                 if cv2.waitKey(1) == ord('q'):  # q to quit
