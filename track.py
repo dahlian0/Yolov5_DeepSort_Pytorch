@@ -103,6 +103,12 @@ def detect(opt):
     # extract what is in between the last '/' and last '.'
     txt_file_name = source.split('/')[-1].split('.')[0]
     txt_path = str(Path(save_dir)) + '/' + txt_file_name + '.txt'
+    
+    # define some lists
+    cross_box=[]
+    appeared_id=[]
+    xy=[]
+    class_name=[]
 
     if pt and device.type != 'cpu':
         model(torch.zeros(1, 3, *imgsz).to(device).type_as(next(model.model.parameters())))  # warmup
@@ -184,6 +190,17 @@ def detect(opt):
                             with open(txt_path, 'a') as f:
                                 f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+                                
+#todo outoutの内訳（1と3）の確認
+#todo frame_idxは+1をするべきなのか
+                        if output[1] < int(0.5 * im0.shape[0]) < output[3]:
+                            midpoint = (output[0]+output[2])/2
+                            if not id in appeared_id :
+                                cross_box.append([midpoint,frame_idx,c,id])
+                                appeared_id.append(id)
+                                xy.append([midpoint,frame_idx])
+                                class_name.append(c)
+                            print(cross_box)
 
                 LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
